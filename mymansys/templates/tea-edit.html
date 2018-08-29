@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<style>
+    form{
+        width: 800px;position: absolute;left:0;
+        top: 0;
+        right: 0; bottom: 0;
+        margin: auto;
+    }
+</style>
+<body>
+<form action="/change1" method="post">
+        {% csrf_token %}
+  <div class="form-group">
+    <label for="tnum">工号</label>
+    <input type="text" class="form-control" value="{{one.tnum}}" id="tnum" name="tnum">
+  </div>
+  <div class="form-group">
+    <label for="tname">姓名</label>
+    <input type="text" class="form-control" id="tname" value="{{one.tname}}" name="tname">
+  </div>
+  <div class="form-group">
+    <label >性 别 ：</label>
+      {% if one.tsex %}
+          男：<input type="radio"   placeholder="性别" name="tsex" value="0" checked="checked">
+          女：<input type="radio"   placeholder="性别" name="tsex" value="1">
+      {% else %}
+          男：<input type="radio"   placeholder="性别" name="tsex" value="0">
+          女：<input type="radio"   placeholder="性别" name="tsex" value="1" checked="checked">
+      {% endif %}
+  </div>
+  <div class="form-group">
+      <label>所带课程</label>
+      {% for item in data %}
+            {% if item.pname in one.pnames %}
+                <input type="checkbox" value="{{ item.pid }}" name="pid" checked="checked">{{item.pname}}
+            {% else %}
+                 <input type="checkbox" value="{{ item.pid }}" name="pid">{{item.pname}}
+            {% endif %}
+      {% endfor %}
+  </div>
+  <input type="hidden" name="tid" value="{{one.tid}}">
+  <button type="submit" class="btn btn-default">提交</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>老师信息</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+<table class="table table-bordered table-striped" style="width:88%;margin:0 auto">
+    {% load demo %}
+    <tr>
+        <th>id</th>
+        <th>工号</th>
+        <th>姓名</th>
+        <th>性别</th>
+        <th>所带课程</th>
+        <th>操作</th>
+    </tr>
+    {% if data %}
+        {% for item in data %}
+            <tr>
+                <td>{{ item.tid }}</td>
+                <td>{{item.tnum}}</td>
+                <td>{{ item.tname }}</td>
+                <td> {% if item.tsex == '0' %}
+                    男
+                {% elif item.tsex == '1' %}
+                    女
+                {% endif %}</td>
+                <td>
+                    {% for item1 in item.pnames|abc %}
+                            {{item1}}
+                    {% endfor %}
+                    <!--{{item.pnames}}-->
+                </td>
+                <td>
+                    <button type="button" class="btn btn-success"><a href="/del1?tid={{item.tid}}">删除</a></button>
+                    <button type="button" class="btn btn-success"><a href="/tea-edit1?tid={{item.tid}}">编辑</a></button>
+                </td>
+            </tr>
+        {% endfor %}
+
+    {% else %}
+        <tr><td>not found</td></tr>
+    {% endif %}
+    <tr>
+        <td colspan="6">
+            <button type="button" class="btn btn-danger"><a href="/tea-add1">添加</a></button>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="8">
+            {{page | safe}}
+        </td>
+    </tr>
+</table>
+</body>
+</html>

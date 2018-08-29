@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/vue.js"></script>
+</head>
+<body>
+        <a href="/testsAdd/">返回</a>
+
+        <div id="app">
+            <form action="/testsupAdd/" method="post" enctype="multipart/form-data">
+                <select v-model="gid" class="form-control" style="margin-top: 10px" name="gid">
+
+                    <option value="">试题所属年级</option>
+                    {% verbatim %}
+                    <option :value="item.gid" v-for="item in gradeData">
+                        {{ item.gname }}
+                    </option>
+                    {% endverbatim %}
+                </select>
+                {% if error.gid.0 %}
+                 {{ error.gid.0 }}<br>
+                {% else %}
+                   <br>
+                {% endif %}
+
+                <select v-model="pid" class="form-control" name="pid">
+
+                    <option value="">试题表所属科目</option>
+                    {% verbatim %}
+                    <option :value="item.pid" v-for="item in partData">
+                        {{ item.pname }}
+                    </option>
+                    {% endverbatim %}
+                </select>
+                {% if error.pid.0 %}{{error.pid.0}}{% endif %}<br>
+                <input type="file" name="file">{% if error.file.0 %}{{error.file.0}}{% endif %}<br>
+                <input type="submit" value="提交">
+            </form>
+        </div>
+
+</body>
+<script>
+
+    function ajax(url,callback,data) {
+        var obj =new XMLHttpRequest()
+        obj.onload=function () {
+            callback(JSON.parse(obj.response))
+        }
+        obj.open("get",url+"?"+data)
+        obj.send()
+    }
+    function postajax(url,callback) {
+        var obj =new XMLHttpRequest()
+        obj.onload=function () {
+            callback(obj.response)
+        }
+        obj.open("post",url)
+        obj.setRequestHeader("content-type","application/x-www-form-urlencoded")
+        obj.send(data)
+    }
+
+    new Vue({
+      el:'#app',
+      data: {
+        gradeData:[],
+        partData:[],
+        typeData:[],
+        opts:[],
+        types:0,
+        title:"",
+        result:"",
+        gid:0,
+        pid:0,
+        tid:0
+      },
+      mounted(){
+          ajax("/gradeajax/", (data)=> {
+                this.gradeData = data
+            })
+          ajax("/partajax/", (data)=> {
+                this.partData = data
+            })
+          ajax("/typesajax/", (data)=> {
+                this.typeData = data
+            })
+      },
+      methods: {
+        addopt(){
+            var obj={};
+            obj.id = Math.random()*100+new Date();
+            obj.value="";
+            this.opts.push(obj);
+        },
+        delopt(id) {
+            this.opts = this.opts.filter(function (item) {
+                if (item.id != id) {
+                    return item
+                }
+            })
+        },
+        submit(){
+            var arr = this.opts.map(function (item) {
+                return item.value
+            })
+            var opts = arr.join("|")
+            let formData = new FormData();
+            formData.append("gid",this.gid)
+            formData.append("pid",this.pid)
+            formData.append("tid",this.tid)
+            formData.append("title",this.title)
+            formData.append("opts",opts)
+            formData.append("result",this.result)
+            fetch("/testsAdd/",{
+                method:"POST",
+                headers:{},
+                body:formData
+            }).then((e)=>{
+                return e.text()
+            }).then((e)=>{
+                if (e=="ok"){
+                    location.href="/tests/"
+                }
+            })
+        }
+      },
+    })
+
+</script>
+</html>

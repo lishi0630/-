@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="/static/js/jquery.js"></script>
+</head>
+<style>
+    li{
+        margin-left: 80px;
+    }
+</style>
+<form action="/zuti/">
+    <input type="text" placeholder="请搜索" id="input" style="width:25%;margin-left: 100px"><input type="button" value="搜索" id="search">
+    <ul>
+        <li>年级：
+            {% for item in grades %}
+                <span class="gna" attr="gid" value="{{ item.gid }}" {% if item.gid == gids %}style="color:red"{% endif %}>{{ item.gname }}</span>
+            {% endfor %}
+        </li>
+        <li>科目:
+            {% for item in parts %}
+                <span class="pna" attr="pid" value="{{ item.pid }}" {% if item.pid == pids %}style="color:red"{% endif %}>{{ item.pname }}</span>
+            {% endfor %}
+        </li>
+        <li>试题类型：
+            {% for item in types %}
+                <span class="tna" attr="tid" value="{{ item.tid }}" {% if item.tid == tids %}style="color:red"{% endif %}>{{item.tname}}</span>
+            {% endfor %}
+        </li>
+    </ul>
+    <input type="button" value="提交" style="margin-left: 100px" id="btn"><input type="button" value="取消" style="margin-left: 100px" id="clear"><br>
+</form>
+<script>
+    query={}
+    $(" .gna").click(function () {
+        $(this).parent().find(".gna").css("color","")
+        $(this).css("color","red")
+        query[$(this).attr('attr')]=$(this).attr("value")
+    })
+    $(" .pna").click(function () {
+        $(this).parent().find(".pna").css("color","")
+        $(this).css("color","red")
+        query[$(this).attr('attr')]=$(this).attr("value")
+    })
+    $(".tna").click(function () {
+        $(this).parent().find(".tna").css("color","")
+        $(this).css("color","red")
+        query[$(this).attr("attr")]=$(this).attr("value")
+    })
+    $("#clear").click(function () {
+        location.href="/zuti/"
+    })
+    $("#btn").click(function () {
+        querystr=""
+        for(var i in query){
+            querystr+=i+"="+query[i]+"&"
+        }
+        querystr=querystr.slice(0,-1)
+        // console.log(querystr)
+        location.href="/zuti/?"+querystr
+    })
+    $("#search").click(function () {
+        var str=$("#input").val()
+        url="/zuti/?search="+str
+        console.log(url)
+        location.href=url
+    })
+</script>
+<!--<div style="margin-left: 100px">-->
+    <!--您可选择单选题3道：现在还剩 <span id="sescore"></span>道<br>&nbsp;-->
+ <!--您可选择多选题3道：现在还剩 <span id="mescore"></span>道<br>&nbsp;&nbsp;-->
+ <!--您可选择简答题3道：现在还剩 <span id="question"></span>道<br>-->
+    <!--总分100分：现在还剩 <span></span>分 <br>-->
+<!--</div>-->
+<table class="table table-bordered table-striped" style="width:88%;margin:0 auto">
+
+    <tr>
+        <th>选择</th>
+        <th>试题id</th>
+        <th>试题类型</th>
+        <th>题目</th>
+        <th>选项</th>
+        <th>答案</th>
+        <th>适用年级</th>
+        <th>适用阶段</th>
+        <th>分值</th>
+    </tr>
+    {% if data %}
+        {% for item in data %}
+            <tr>
+            <td><input type="checkbox"></td>
+            <td name="id">{{item.id}}</td>
+
+             <td name="tid">{{ item.tnames }} </td>
+             <td name ="title">{{ item.title }}</td>
+              <td name ="opts">{{ item.opts }}</td>
+             <td name ="result">{{ item.result }}</td>
+              <td name ="gid">{{ item.gnames }}</td>
+               <td name ="pid">{{ item.pnames }}</td>
+            <td id="score">
+                <input type="radio" name="fenshu+{{item.id}}">1
+                <input type="radio" name="fenshu+{{item.id}}">2
+                <input type="radio" name="fenshu+{{item.id}}" checked>3
+                <input type="radio" name="fenshu+{{item.id}}">4
+                <input type="radio" name="fenshu+{{item.id}}">5
+                <input type="text" name="fenshu+{{item.id}}">
+            </td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr><td>not found</td></tr>
+    {% endif %}
+</table>
+</body>
+</html>
